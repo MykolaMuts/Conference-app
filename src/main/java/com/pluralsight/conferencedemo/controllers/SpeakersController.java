@@ -2,6 +2,7 @@ package com.pluralsight.conferencedemo.controllers;
 
 import com.pluralsight.conferencedemo.models.Speaker;
 import com.pluralsight.conferencedemo.repositories.SpeakerRepository;
+import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,10 +38,14 @@ public class SpeakersController {
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    public Speaker update(@PathVariable Long id, @RequestBody Speaker speaker) {
+    public Speaker update(@PathVariable Long id, @RequestBody Speaker speaker) throws BadHttpRequest {
         //because this is a PUT, we expect all attributes to be passed in. A PATCH would only need what has changed.
         //TODO: Add validation that all attributes are passed in, otherwise return a 400 bad payload
+
         Speaker existingSpeaker = speakerRepository.getOne(id);
+//        if(existingSpeaker != speaker){
+//            throw new BadHttpRequest();
+//        }
         BeanUtils.copyProperties(speaker, existingSpeaker, "speaker_id");
         return speakerRepository.saveAndFlush(existingSpeaker);
     }
